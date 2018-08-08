@@ -20,23 +20,16 @@ exports.findLastHardwarePumps = async function(req, res){
 			function(err, pumps){
 				var count = Object.keys(pumps).length;
 				if(count == 0) return res.status(404).jsonp({'error' : 'No hay bombas de agua'});
-				return res.status(200).jsonp(pumps);
+				return res.status(200).jsonp(pumps.sort(custom_sort));
 			}
 			);
 	});
 }
 
 //Agrega una nueva temperatura
-exports.addPump = async function(req, res){
-	//let payload = req.payload.toString('utf8');
+exports.addPump = async function(apikey, pump){
 
-	//let payloadArray = payload.split(";");
-
-	//let apikey = payloadArray[0];
-
-	//let tempValue = payloadArray[1];
-	let pumpValue = req.body.number;
-	let apikey = req.body.apikey;
+	let pumpValue = pump;
 	
 	var error;
 
@@ -65,4 +58,8 @@ exports.addPump = async function(req, res){
 		if(err) return;
 		res.status(200).jsonp(pump);
 	});
+}
+
+function custom_sort(a, b) {
+    return a.createdAt - b.createdAt;
 }

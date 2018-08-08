@@ -15,28 +15,21 @@ exports.findLastHardwareTemps = async function(req, res){
 
 		Temp.find({'hwID' : hw._id})
 		.limit(10)
-		.sort({'createdAt': 1})
+		.sort({'createdAt': -1})
 		.exec(
 			function(err, temps){
 				var count = Object.keys(temps).length;
 				if(count == 0) return res.status(404).jsonp({'error' : 'No hay temperaturas'});
-				return res.status(200).jsonp(temps);
+				return res.status(200).jsonp(temps.sort(custom_sort));
 			}
 			);
 	});
 }
 
 //Agrega una nueva temperatura
-exports.addTemp = async function(req, res){
-	//let payload = req.payload.toString('utf8');
+exports.addTemp = async function(apikey, data){
 
-	//let payloadArray = payload.split(";");
-
-	//let apikey = payloadArray[0];
-
-	//let tempValue = payloadArray[1];
-	let tempValue = req.body.data;
-	let apikey = req.body.apikey;
+	let tempValue = data;
 	
 	var error;
 
@@ -63,13 +56,10 @@ exports.addTemp = async function(req, res){
 
 	temp.save(function(err, temp){
 		if(err) return;
-		checkTemp(temp.data, res);
+		return;
 	});
 }
 
-checkTemp = function (temp,res){
-	// if(temp>25) return res.end(1);
-	// if(temp<15) return res.end(-1);
-	// return res.end(0);
-	return res.status(200).jsonp('temp : '+temp);
+function custom_sort(a, b) {
+    return a.createdAt - b.createdAt;
 }

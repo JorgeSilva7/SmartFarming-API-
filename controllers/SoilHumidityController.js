@@ -15,29 +15,22 @@ exports.findLastHardwareSoilHumidities = async function(req, res){
 
 		SoilHumidity.find({'hwID' : hw._id})
 		.limit(10)
-		.sort({'createdAt': 1})
+		.sort({'createdAt': -1})
 		.exec(
 			function(err, soilhumidities){
 				var count = Object.keys(soilhumidities).length;
 				if(count == 0) return res.status(404).jsonp({'error' : 'No hay humedad de suelo'});
-				return res.status(200).jsonp(soilhumidities);
+				return res.status(200).jsonp(soilhumidities.sort(custom_sort));
 			}
 			);
 	});
 }
 
 //Agrega una nueva temperatura
-exports.addSoilHumidity = async function(req, res){
-	//let payload = req.payload.toString('utf8');
+exports.addSoilHumidity = async function(apikey, data){
 
-	//let payloadArray = payload.split(";");
+	let soilhumidityValue = data;
 
-	//let apikey = payloadArray[0];
-
-	//let tempValue = payloadArray[1];
-	let soilhumidityValue = req.body.data;
-	let apikey = req.body.apikey;
-	
 	var error;
 
 	await SmartHardware.findOne({'apikey' : apikey}, function(err, hw){
@@ -63,6 +56,10 @@ exports.addSoilHumidity = async function(req, res){
 
 	soilhumidity.save(function(err, soilhumidity){
 		if(err) return;
-		return res.status(200).jsonp('soilhumidity : '+soilhumidity);
+		return;
 	});
+}
+
+function custom_sort(a, b) {
+    return a.createdAt - b.createdAt;
 }

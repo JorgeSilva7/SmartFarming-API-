@@ -23,7 +23,7 @@ var UserController = require('./controllers/UserController');
 var SmartHardwareModel = require('./models/SmartHardware')(app, mongoose);
 var SmartHardwareController = require('./controllers/SmartHardwareController');
 var TempModel = require('./models/Temp')(app, mongoose);
-var TempsController = require('./controllers/TempController');
+var TempController = require('./controllers/TempController');
 var HumidityModel = require('./models/Humidity')(app, mongoose);
 var HumidityController = require('./controllers/HumidityController');
 var PumpModel = require('./models/Pump')(app, mongoose);
@@ -57,23 +57,18 @@ smartfarmingweb.use(async function(req, res, next) {
 });
 
 //Rutas Temperatura
-smartfarming.route('/temp')
-.post(TempsController.addTemp);
 smartfarmingweb.route('/hwtemps')
-.post(TempsController.findLastHardwareTemps);
+.post(TempController.findLastHardwareTemps);
+
 //Rutas Humedad
-smartfarming.route('/humidity')
-.post(HumidityController.addHumidity);
 smartfarmingweb.route('/hwhumidities')
 .post(HumidityController.findLastHardwareHumidities);
+
 //Rutas Humedad Suelo
-smartfarming.route('/soilhumidity')
-.post(SoilHumidityController.addSoilHumidity);
 smartfarmingweb.route('/hwsoilhumidities')
 .post(SoilHumidityController.findLastHardwareSoilHumidities);
+
 //Rutas Bomba de Agua
-smartfarming.route('/pump')
-.post(PumpController.addPump);
 smartfarmingweb.route('/hwpumps')
 .post(PumpController.findLastHardwarePumps);
 
@@ -93,26 +88,36 @@ smartfarming.route('/user')
 auth.route('/login')
 .post(UserController.loginUser);
 
-app.use('/smartFarming', auth);
-app.use('/smartFarming', smartfarming);
-app.use('/smartFarming', smartfarmingweb);
+app.use('/smartfarming', auth);
+app.use('/smartfarming', smartfarming);
+app.use('/smartfarming', smartfarmingweb);
 
 server.on('request', function(req, res) {
+	let url = req.url.split('/');
 
-	if(req.url.split('/')[1] == 'temp'){
-		TempsController.addTemp(req,res);
+	if(url[1] == 'data'){
+		let payload = req.payload.toString('utf8');
+		payload = payload.replace(/ /g, "");
+		payload = payload.split(';');
+
+		let apikey = payload[0];
+		let temp = payload[1];
+		let humidity = payload[2];
+		let soilHumidity = payload[3];
+
+		TempController.addTemp(apikey, temp);
+		HumidityController.addHumidity(apikey, humidity);
+		SoilHumidityController.addSoilHumidity(apikey, soilHumidity);
 	}
 
-	if(req.url.split('/')[1] == 'humidity'){
-		console.log("Humidity");
-		res.end("gracias por la Humidity");
-		console.log('Humidity: '+req.payload.toString('utf8'));
-	}
+	if(url[1] ==  'pump'){
+		let payload = req.payload.toString('utf8');
+		payload = payload.replace(/ /g, "");
+		payload = payload.split(';');
 
-	if(req.url.split('/')[1] == 'soilhumidity'){
-		console.log("Soilhumidity");
-		res.end("gracias por la Soilhumidity");
-		console.log('Soilhumidity: '+req.payload.toString('utf8'));
+		let apikey = payload[0];
+		let pump = payload[1];
+		PumpController.addPump(apikey, pump);
 	}
 });
 
