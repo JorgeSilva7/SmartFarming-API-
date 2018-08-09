@@ -26,8 +26,8 @@ var TempModel = require('./models/Temp')(app, mongoose);
 var TempController = require('./controllers/TempController');
 var HumidityModel = require('./models/Humidity')(app, mongoose);
 var HumidityController = require('./controllers/HumidityController');
-var PumpModel = require('./models/Pump')(app, mongoose);
-var PumpController = require('./controllers/PumpController');
+var RelayModel = require('./models/Relay')(app, mongoose);
+var RelayController = require('./controllers/RelayController');
 var SoilHumidityModel = require('./models/SoilHumidity')(app, mongoose);
 var SoilHumidityController = require('./controllers/SoilHumidityController');
 
@@ -68,9 +68,9 @@ smartfarmingweb.route('/hwhumidities')
 smartfarmingweb.route('/hwsoilhumidities')
 .post(SoilHumidityController.findLastHardwareSoilHumidities);
 
-//Rutas Bomba de Agua
-smartfarmingweb.route('/hwpumps')
-.post(PumpController.findLastHardwarePumps);
+//Rutas Relay
+smartfarmingweb.route('/hwrelays')
+.post(RelayController.findLastHardwarePumps);
 
 //Rutas Hardware
 smartfarmingweb.route('/hardware')
@@ -112,14 +112,15 @@ server.on('request', function(req, res) {
 		SoilHumidityController.addSoilHumidity(apikey, soilHumidity);
 	}
 
-	if(url[1] ==  'pump'){
+	if(url[1] ==  'relay'){
 		let payload = req.payload.toString('utf8');
 		payload = payload.replace(/ /g, "");
 		payload = payload.split(';');
 
 		let apikey = payload[0];
-		let pump = payload[1];
-		PumpController.addPump(apikey, pump);
+		let relay = payload[1];
+
+		RelayController.addPump(apikey, relay);
 	}
 });
 

@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
-var Pump = mongoose.model('Pump');
+var Relay = mongoose.model('Relay');
 var SmartHardware = mongoose.model('SmartHardware');
 
-exports.findLastHardwarePumps = async function(req, res){
+exports.findLastHardwareRelays = async function(req, res){
 	await SmartHardware.findOne({'apikey' : req.body.apikey}, function(err, hw){
 		if(err){
 			error = true;
@@ -13,23 +13,23 @@ exports.findLastHardwarePumps = async function(req, res){
 			return res.status(500).jsonp({'error' : 'apikey no encontrada'});
 		}
 
-		Pump.find({'hwID' : hw._id})
+		Relay.find({'hwID' : hw._id})
 		.limit(100)
 		.sort({'createdAt': -1})
 		.exec(
-			function(err, pumps){
-				var count = Object.keys(pumps).length;
-				if(count == 0) return res.status(404).jsonp({'error' : 'No hay bombas de agua'});
-				return res.status(200).jsonp(pumps.sort(custom_sort));
+			function(err, relays){
+				var count = Object.keys(relays).length;
+				if(count == 0) return res.status(404).jsonp({'error' : 'No hay relays'});
+				return res.status(200).jsonp(relays.sort(custom_sort));
 			}
 			);
 	});
 }
 
-//Agrega una nueva temperatura
-exports.addPump = async function(apikey, pump){
+//Agrega una nuevo relay
+exports.addRelay = async function(apikey, relay){
 
-	let pumpValue = pump;
+	let relayValue = relay;
 	
 	var error;
 
@@ -48,15 +48,15 @@ exports.addPump = async function(apikey, pump){
 
 	let date = new Date();
 
-	var pump = new Pump({
+	var relay = new Relay({
 		createdAt: date.getTime(),
 		hwID: currentHw._id,
-		number: pumpValue,
+		number: relayValue,
 	});
 
-	pump.save(function(err, pump){
+	relay.save(function(err, relay){
 		if(err) return;
-		res.status(200).jsonp(pump);
+		res.status(200).jsonp(relay);
 	});
 }
 
