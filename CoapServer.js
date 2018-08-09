@@ -76,6 +76,8 @@ smartfarmingweb.route('/hwpumps')
 smartfarmingweb.route('/hardware')
 .get(SmartHardwareController.listAllHardwares)
 .post(SmartHardwareController.addHardware);
+smartfarmingweb.route('/config')
+.post(SmartHardwareController.setConfig);
 smartfarmingweb.route('/userhardwares')
 .post(SmartHardwareController.listUserHW);
 smartfarmingweb.route('/userhardware')

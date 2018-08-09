@@ -4,6 +4,7 @@ var smartSchema = new mongoose.Schema({
 	userID: {type: mongoose.Schema.Types.ObjectId, required: true},
 	apikey: {type: String, required: true, unique: true},
 	description: String,
+	config: {type: String}
 });
 
 module.exports = mongoose.model('SmartHardware', smartSchema);

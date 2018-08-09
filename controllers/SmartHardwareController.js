@@ -82,6 +82,45 @@ exports.addHardware = async function(req, res){
 	}
 }
 
+//Agrega una configuracion a un hardware
+exports.setConfig = async function(req, res){
+	var error=false;
+	let currentHardware;
+
+	await SmartHardware.update({'apikey' : req.body.apikey},
+		{config : req.body.config},
+		{multi:true}, async function(err, hw){
+		if(err){
+			error = true;
+			return res.status(500).jsonp(err);
+		}
+		if(hw == null){
+			error = true;
+			return res.status(404).jsonp({'response' : 'No hay SmartFarming Hardwares'});
+		}
+		return res.status(200).send(hw);
+	});
+
+	// if(!error){
+	// 	if(req.body == null) return res.status(500).send("BAD REQUEST");
+	// 	console.log(req.body.config);
+	// 	SmartHardware.update(
+	//      {uid: 'uid'}, 
+	//      {vehicle_status : 'vehicleSatus' },
+	//      {multi:true}, 
+	//        function(err, numberAffected){  
+	//        });
+	// 	currentHardware.config = req.body.config;
+
+	// 	currentHardware.save(function(err, hw){
+	// 		if(err) return res.status(501).send(err.message);
+	// 		return res.status(200).send(hw);
+	// 	});
+	// }
+}
+
+
+
 //Retorna json con error si es que lo hay en algun campo (al agregar usuario)
 checkBodyHW = function (req, res){
 	let error ="";
