@@ -70,7 +70,7 @@ smartfarmingweb.route('/hwsoilhumidities')
 
 //Rutas Relay
 smartfarmingweb.route('/hwrelays')
-.post(RelayController.findLastHardwarePumps);
+.post(RelayController.findLastHardwareRelays);
 
 //Rutas Hardware
 smartfarmingweb.route('/hardware')
